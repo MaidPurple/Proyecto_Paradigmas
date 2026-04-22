@@ -1,0 +1,86 @@
+@startuml
+title Sistema de Gestión de Proveedores - MVC + DAO
+
+package "Acceso a Datos" {
+
+    interface ICrud {
+        +insertar(dto: ProveedorDTO): boolean
+        +leer(index: int): ProveedorDTO
+        +actualizar(index: int, dto: ProveedorDTO): boolean
+        +eliminar(index: int): boolean
+        +buscarIndex(dto: ProveedorDTO): int
+        +leerTodos(): List<ProveedorDTO>
+    }
+
+    class Persistencia {
+        -archivo: String
+        -lista: List<T>
+        -entrada: ObjectInputStream
+        -salida: ObjectOutputStream
+        +guardar(): void
+        +Persistencia(archivo : String)
+    }
+}
+
+package "modeloDTO" {
+
+    class ProveedorDTO {
+        -id: int
+        -nombre: String
+        -telefono: String
+        -direccion: String
+    }
+    interface Serializable {
+
+    }
+}
+package "ModeloDAO"{
+    class ProveedorDAO {
+        -listaProveedores: List<ProveedorDTO>
+        +ProveedorDAO()
+        +insertar(dto: ProveedorDTO): boolean
+        +leer(index: int): ProveedorDTO
+        +actualizar(index: int, dto: ProveedorDTO): boolean
+        +eliminar(index: int): boolean
+        +buscarIndex(dto: ProveedorDTO): int
+        +leerTodos(): List<ProveedorDTO>
+    }
+}
+package "vista"{
+    class ProveedorUI {
+        +ProveedorUI()
+        +intComponents(): void
+    }
+}
+
+package "Controlador" {
+    interface ActionListener {
+        +actionPerformed(ActionEvent e)
+    }
+
+    class ProveedorControlador {
+        -ui: ProveedorUI
+        -dao: ProveedorDAO
+        -dto: ProveedorDTO
+
+        +insertar(dto: ProveedorDTO): void
+        +buscar(dto: ProveedorDTO): ProveedorDTO
+        +modificar(index: int, dto: ProveedorDTO): void
+        +eliminar(index: int): void
+        +mostrar(): void
+    }
+}
+
+
+ProveedorDAO ..|> ICrud : usa
+ProveedorDAO --|> Persistencia : es una 
+
+ProveedorControlador <-- ProveedorUI : es parte 
+ProveedorControlador <-- ProveedorDAO : tiene
+ProveedorControlador <-- ProveedorDTO : crea
+
+ProveedorDAO --> ProveedorDTO : crea
+
+ProveedorControlador ..> ActionListener
+ProveedorDTO ..> Serializable : usa
+@enduml
